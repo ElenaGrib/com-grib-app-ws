@@ -1,6 +1,7 @@
 package com.grib.mobile.app.ws.ui.controller;
 
 import com.grib.mobile.app.ws.ui.model.responce.UserRest;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController //this class will be able to receive http requests
@@ -21,7 +22,10 @@ public class UserController {
     }
 
     //here we return an Object (model) instead of primitive type
-    @GetMapping(path = "/{userId}") //http://localhost:8080/users/1
+    //JSON - a default return format
+    //to return different status code (acept of 200), we need to user ResponseEntity object instead of UserRest object
+    @GetMapping(path = "/{userId}", //http://localhost:8080/users/1
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest getUser(@PathVariable Long userId) { //@PathVariable annotation allows us to bind userId from request with our method
         UserRest returnUser = new UserRest();
         returnUser.setUserId(userId);
