@@ -1,5 +1,6 @@
 package com.grib.mobile.app.ws.ui.controller;
 
+import com.grib.mobile.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.grib.mobile.app.ws.ui.model.responce.UserRest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,9 +38,16 @@ public class UserController {
         return new ResponseEntity<>(returnUser, HttpStatus.OK);
     }
 
-    @PostMapping
-    public String createUser() {
-        return "create user was called";
+    //@RequestBody annotation is used when we want to receive information in the body from the Http request
+    //and in this method we (1) CONSUME JSON or XML media type request and (2) PRODUCE JSON or XML media type response
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+                 produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<UserRest> createUser(@RequestBody UserDetailsRequestModel userDetails) {
+        UserRest returnUser = new UserRest();
+        returnUser.setFirstName(userDetails.getFirstName());
+        returnUser.setLastName(userDetails.getLastName());
+        returnUser.setEmail(userDetails.getEmail());
+        return new ResponseEntity<>(returnUser, HttpStatus.CREATED);
     }
 
     @PutMapping
