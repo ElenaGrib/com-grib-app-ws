@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController //this class will be able to receive http requests
 @RequestMapping("users") //here we match our controller with "users" path, i.e. http://localhost:8080/users
 public class UserController {
@@ -41,8 +43,8 @@ public class UserController {
     //@RequestBody annotation is used when we want to receive information in the body from the Http request
     //and in this method we (1) CONSUME JSON or XML media type request and (2) PRODUCE JSON or XML media type response
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-                 produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<UserRest> createUser(@RequestBody UserDetailsRequestModel userDetails) {
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<UserRest> createUser(@Valid @RequestBody UserDetailsRequestModel userDetails) {
         UserRest returnUser = new UserRest();
         returnUser.setFirstName(userDetails.getFirstName());
         returnUser.setLastName(userDetails.getLastName());
