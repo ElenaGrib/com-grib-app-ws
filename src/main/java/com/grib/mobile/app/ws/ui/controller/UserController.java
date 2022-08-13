@@ -1,5 +1,6 @@
 package com.grib.mobile.app.ws.ui.controller;
 
+import com.grib.mobile.app.ws.exceptions.UserServiceException;
 import com.grib.mobile.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.grib.mobile.app.ws.ui.model.responce.UserRest;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,8 @@ public class UserController {
     @GetMapping(path = "/{userId}", //http://localhost:8080/users/1
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<UserRest> getUser(@PathVariable String userId) { //@PathVariable annotation allows us to bind userId from request with our method
-        UserRest returnUser = new UserRest();
+        if (true)
+            throw new UserServiceException("A user service exception is thrown."); //here we throw our custom exception
 
         if (users.containsKey(userId)) {
             return new ResponseEntity<>(users.get(userId), HttpStatus.OK);
