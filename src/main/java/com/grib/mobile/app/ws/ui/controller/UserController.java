@@ -8,10 +8,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController //this class will be able to receive http requests
 @RequestMapping("users") //here we match our controller with "users" path, i.e. http://localhost:8080/users
 public class UserController {
+
+    Map<String, UserRest> users;
 
     //an example of method with 2 parameters
     //by default, both request params are required
@@ -31,13 +36,14 @@ public class UserController {
     //to return different status code (acept of 200), we need to user ResponseEntity object instead of UserRest object
     @GetMapping(path = "/{userId}", //http://localhost:8080/users/1
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<UserRest> getUser(@PathVariable Long userId) { //@PathVariable annotation allows us to bind userId from request with our method
+    public ResponseEntity<UserRest> getUser(@PathVariable String userId) { //@PathVariable annotation allows us to bind userId from request with our method
         UserRest returnUser = new UserRest();
-        returnUser.setUserId(userId);
-        returnUser.setFirstName("firstName");
-        returnUser.setLastName("lastName");
-        returnUser.setEmail("email@mail.com");
-        return new ResponseEntity<>(returnUser, HttpStatus.OK);
+
+        if (users.containsKey(userId)) {
+            return new ResponseEntity<>(users.get(userId), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     //@RequestBody annotation is used when we want to receive information in the body from the Http request
@@ -49,6 +55,17 @@ public class UserController {
         returnUser.setFirstName(userDetails.getFirstName());
         returnUser.setLastName(userDetails.getLastName());
         returnUser.setEmail(userDetails.getEmail());
+
+        String userId = UUID.randomUUID().toString();
+
+        if (users == null) {
+            users = new HashMap<>();
+        }
+
+        users.put(userId, returnUser);
+
+        returnUser.setUserId(userId);
+
         return new ResponseEntity<>(returnUser, HttpStatus.CREATED);
     }
 
@@ -57,8 +74,9 @@ public class UserController {
         return "update user was called";
     }
 
-    @DeleteMapping
-    public String deleteUser() {
-        return "delete user was called";
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+        users.remove(id);
+        return ResponseEntity.noContent().build();
     }
 }
