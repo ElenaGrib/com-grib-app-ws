@@ -3,21 +3,24 @@ package com.grib.mobile.app.ws.ui.controller;
 import com.grib.mobile.app.ws.exceptions.UserServiceException;
 import com.grib.mobile.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.grib.mobile.app.ws.ui.model.responce.UserRest;
+import com.grib.mobile.app.ws.userService.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController //this class will be able to receive http requests
 @RequestMapping("users") //here we match our controller with "users" path, i.e. http://localhost:8080/users
 public class UserController {
 
     Map<String, UserRest> users;
+
+    @Autowired
+    UserService userService;
 
     //an example of method with 2 parameters
     //by default, both request params are required
@@ -53,21 +56,7 @@ public class UserController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<UserRest> createUser(@Valid @RequestBody UserDetailsRequestModel userDetails) {
-        UserRest returnUser = new UserRest();
-        returnUser.setFirstName(userDetails.getFirstName());
-        returnUser.setLastName(userDetails.getLastName());
-        returnUser.setEmail(userDetails.getEmail());
-
-        String userId = UUID.randomUUID().toString();
-
-        if (users == null) {
-            users = new HashMap<>();
-        }
-
-        users.put(userId, returnUser);
-
-        returnUser.setUserId(userId);
-
+        UserRest returnUser = userService.createUser(userDetails);
         return new ResponseEntity<>(returnUser, HttpStatus.CREATED);
     }
 
